@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}| Login{% endblock %}
+
+{% block content %}
+    <section id="login" class="d-flex justify-content-center" style="padding-top: 15%;">
+        <div class="d-flex flex-column justify-content-center align-items-center border"
+             style="width: 700px; height: 500px;">
+            <h1 class="fw-normal mb-5">Login</h1>
+            {% for _, text in form.errors.items %}
+                <div class="alert alert-danger" role="alert">
+                    {{ text.as_text }}
+                </div>
+            {% endfor %}
+            <form method="POST">
+                {% csrf_token %}
+                <input type="text" class="form-control mb-4" name="username" placeholder="Username">
+                <input type="password" class="form-control mb-4" name="password" placeholder="Password">
+                <div class="d-flex justify-content-end">
+                    <button class="btn btn-primary w-25" type="submit" name="submit">Login</button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+{% endblock %}

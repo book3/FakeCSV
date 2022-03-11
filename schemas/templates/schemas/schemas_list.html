@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+{% block title %}My schemas{% endblock title %}
+
+{% block content %}
+    <section style="width: 85%;">
+        <nav class="navbar justify-content-between">
+            <h4>Data Schemas</h4>
+            <a href="{% url 'schema-create' %}" class="btn btn-success">New schema</a>
+        </nav>
+        <table class="table table-bordered mt-2">
+            <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Title</th>
+                <th scope="col">Modified</th>
+                <th scope="col">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for schema in schemas %}
+                <tr>
+                    <th scope="row">{{ forloop.counter|normalize_table_number:page_obj.number }}</th>
+                    <td><a href="{% url 'datasets' schema.id %}">{{ schema.title }}</a></td>
+                    <td>{{ schema.updated_at|date:'Y-m-d' }}</td>
+                    <td><a href="{% url 'schema-update' schema.id %}" class="text-decoration-none">Edit schema</a>
+                        <a href="{% url 'schema-delete' schema.id %}" class="text-decoration-none ms-3 text-danger">Delete</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </section>
+
+    <!-- Pagination -->
+    <div class="text-center">
+        {% if is_paginated %}
+            {% if page_obj.has_previous %}
+                {% if page_obj.paginator.num_pages > 2 and page_obj.previous_page_number != 1 %}
+                    <a href="?page=1" class="btn btn-outline-info mb-4">First</a>
+                {% endif %}
+                <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-outline-info mb-4">Previous</a>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                    <a href="?page={{ num }}" class="btn btn-info mb-4">{{ num }}</a>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <a href="?page={{ num }}" class="btn btn-outline-info mb-4">{{ num }}</a>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}" class="btn btn-outline-info mb-4">Next</a>
+                {% if page_obj.paginator.num_pages > 2 and page_obj.next_page_number != page_obj.paginator.num_pages %}
+                    <a href="?page={{ page_obj.paginator.num_pages }}" class="btn btn-outline-info mb-4">Last</a>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+    </div>
+
+{% endblock content %}

@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}My schemas{% endblock title %}
+
+{% block content %}
+
+    <section style="width: 90%">
+        <form action="" method="POST">
+            <nav class="navbar justify-content-between">
+                <h4>New schema</h4>
+                <button class="btn btn-primary" type="submit">Submit</button>
+            </nav>
+            {% csrf_token %}
+            <div class="w-50">
+                {{ form }}
+            </div>
+
+            <div>
+                <h4>Schema Columns</h4>
+                {{ columns.management_form }}
+                {% for form in columns.forms %}
+                    <div class="row align-items-center mt-3">
+                        <div class="d-flex col-md-9">
+                            {% for hidden in form.hidden_fields %}
+                                {{ hidden }}
+                            {% endfor %}
+                            <div class="form-group col-md-5 me-3">
+                                {{ form.name.label_tag }} {{ form.name }} {{ form.name.errors.as_ul }}
+                            </div>
+                            <div class="form-group col-md-3 me-3">
+                                {{ form.type.label_tag }} {{ form.type }} {{ form.type.errors.as_ul }}
+                            </div>
+                            <div class="form-group me-3">
+                                {{ form.start_value.label_tag }} {{ form.start_value }} {{ form.start_value.errors.as_ul }}
+                            </div>
+                            <div class="form-group me-3">
+                                {{ form.end_value.label_tag }} {{ form.end_value }} {{ form.end_value.errors.as_ul }}
+                            </div>
+                        </div>
+                        <div class="form-group col-md-2">
+                            {{ form.order.label_tag }} {{ form.order }} {{ form.order.errors.as_ul }}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </form>
+    </section>
+
+{% endblock content %}
+
+{% block script %}
+    <script src="{% static 'schemas/jquery-3.3.1.min.js' %}"></script>
+    <script src="{% static 'schemas/bootstrap.min.js' %}"></script>
+    <script src="{% static 'schemas/jquery.formset.js' %}"></script>
+
+    <script type="text/javascript">
+        toggleRange();
+
+        $('.row').formset({
+            addText: 'Add column',
+            deleteText: 'Delete',
+            prefix: 'schema_columns',
+            addCssClass: 'btn btn-primary add_column mt-3',
+            deleteCssClass: 'delete-row text-danger col-md-1 mt-3 text-decoration-none'
+        });
+
+        $('.add_column').click(function () {
+            toggleRange();
+        });
+
+        function toggleRange() {
+            $.each($('.form-group .int-range'), function (index, element) {
+                console.log('index: ' + index)
+                if (element.value != 'Integer') {
+                    $('#id_schema_columns-' + index + '-start_value').parent().hide();
+                    $('#id_schema_columns-' + index + '-end_value').parent().hide();
+                }
+                element.oninput = function () {
+                    if (element.value == 'Integer') {
+                        $('#id_schema_columns-' + index + '-start_value').parent().show();
+                        $('#id_schema_columns-' + index + '-end_value').parent().show();
+                    } else {
+                        $('#id_schema_columns-' + index + '-start_value').parent().hide();
+                        $('#id_schema_columns-' + index + '-end_value').parent().hide();
+                    }
+                }
+            });
+        }
+
+    </script>
+{% endblock %}
